@@ -1,7 +1,6 @@
 <script lang="ts">
     import './styles.sass';
-    let { data }: { title: string } = $props();
-    import Svelecte from 'svelecte';
+    let { data }: { title: string; options?: string[] } = $props();
     let selectedValue = $state('');
     let isOptions = $state(false);
 
@@ -13,18 +12,27 @@
 
 <div class="Input">
     <input
-        type={'time'}
+        type="time"
         placeholder={data.title}
         bind:value={selectedValue}
         id={data.title.replace(' ', '')}
         onfocus={() => (isOptions = false)}
     />
     {#if data.options}
-        <div class="select" onclick={() => (isOptions = !isOptions)}></div>
+        <div
+            class="select"
+            onclick={() => (isOptions = !isOptions)}
+            tabindex="0"
+            onkeyup={null}
+            role="button"
+        ></div>
         {#if isOptions}
             <div class="options">
                 {#each data.options as option}
                     <div
+                        tabindex="0"
+                        onkeyup={null}
+                        role="button"
                         class="option"
                         onclick={() => (
                             (selectedValue = option), (isOptions = !isOptions)
