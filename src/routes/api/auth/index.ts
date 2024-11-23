@@ -27,6 +27,7 @@ export async function getValidToken() {
     const { accessToken, tokenExpiry } = getTokensFromCookies();
 
     const currentTime = Date.now();
+    console.log({ currentTime, tokenExpiry: Number(tokenExpiry) });
 
     if (accessToken && tokenExpiry && currentTime < Number(tokenExpiry)) {
         console.log('Токен актуален');
