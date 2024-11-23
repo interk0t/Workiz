@@ -60,6 +60,7 @@ export async function handleTokenExchange(code: string) {
             setCookie('access_token', data.access_token, 7);
             setCookie('refresh_token', data.refresh_token, 7);
             setCookie('token_expiry', expiryTime.toString(), 7);
+            console.log('data:', data);
         } else {
             throw new Error('Failed to get access token');
         }
