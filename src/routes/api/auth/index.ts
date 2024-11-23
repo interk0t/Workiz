@@ -25,9 +25,7 @@ export function getTokensFromCookies() {
 
 export async function getValidToken() {
     const { accessToken, tokenExpiry } = getTokensFromCookies();
-
     const currentTime = Date.now();
-    console.log({ currentTime, tokenExpiry: Number(tokenExpiry) });
 
     if (accessToken && tokenExpiry && currentTime < Number(tokenExpiry)) {
         console.log('Токен актуален');
@@ -50,13 +48,10 @@ export async function handleTokenExchange(code: string) {
 
         const data = await response.json();
         if (data.access_token) {
-            const expiryTime =
-                Date.now() + Math.min(data.expires_in, 30) * 1000;
-
+            const expiryTime = Date.now() + 5 * 1000;
             setCookie('access_token', data.access_token, 7);
             setCookie('refresh_token', data.refresh_token, 7);
             setCookie('token_expiry', expiryTime.toString(), 7);
-            console.log('data:', data);
         } else {
             throw new Error('Failed to get access token');
         }
@@ -64,6 +59,7 @@ export async function handleTokenExchange(code: string) {
         console.error('Error:', error);
     }
 }
+
 export async function handleTokenRefresh() {
     try {
         const refreshToken = getCookie('refresh_token');
@@ -83,7 +79,9 @@ export async function handleTokenRefresh() {
         const data = await response.json();
 
         if (data.access_token) {
+            const expiryTime = Date.now() + 5 * 1000;
             setCookie('access_token', data.access_token, 7);
+            setCookie('token_expiry', expiryTime.toString(), 7);
             console.log('Updated Access Token:', data.access_token);
         } else {
             throw new Error('Failed to refresh access token');
