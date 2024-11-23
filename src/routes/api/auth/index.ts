@@ -50,7 +50,9 @@ export async function handleTokenExchange(code: string) {
 
         const data = await response.json();
         if (data.access_token) {
-            const expiryTime = Date.now() + data.expires_in * 1000;
+            const expiryTime =
+                Date.now() + Math.min(data.expires_in, 30) * 1000;
+
             setCookie('access_token', data.access_token, 7);
             setCookie('refresh_token', data.refresh_token, 7);
             setCookie('token_expiry', expiryTime.toString(), 7);
