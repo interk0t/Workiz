@@ -23,14 +23,17 @@ async function getAccessToken(authCode: string) {
 
 // Основной обработчик загрузки страницы
 export async function load({ url }) {
-    const authCode = url.searchParams.get('code');
+    const authCode = '5bc8c268e9e771db18b3c19e91356d75dedfee1a';
     if (!authCode) {
         throw new Error('Authorization code not found');
     }
 
     // Получаем access token
     const accessToken = await getAccessToken(authCode);
+    console.log('accessToken2', accessToken);
 
-    // Возвращаем данные, которые будут доступны на клиенте
-    return json({ accessToken });
+    // Возвращаем объект, который будет доступен в компоненте
+    return {
+        accessToken: authCode, // возвращаем как свойство
+    };
 }

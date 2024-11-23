@@ -52,6 +52,8 @@
         method: string = 'GET',
         body?: any,
     ) {
+        console.log('accessToken', accessToken);
+
         const url = `${BASE_API_URL}/${endpoint}?api_token=${API_TOKEN}`;
         try {
             const response = await fetch(url, {
