@@ -7,7 +7,7 @@
         apiRequest,
         getDealFields,
         setDealFields,
-    } from '../../utils/index.js';
+    } from '../api/utils/index.js';
     import {
         getCookie,
         handleTokenExchange,

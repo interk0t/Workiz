@@ -1,5 +1,5 @@
-import { getValidToken } from '../routes/api/auth/index.js';
-import { customFields } from '../store/index.svelte.js';
+import { getValidToken } from '../auth/index.js';
+import { customFields } from '../../../store/index.svelte.js';
 
 export async function checkCustomFields() {
     const _customFields = await getCustomFields();
