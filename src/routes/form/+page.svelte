@@ -39,7 +39,7 @@
             console.log('Все кастомные поля уже созданы');
         }
     }
-
+    let { accessToken }: { accessToken: string } = $props();
     $effect(() => {
         checkCustomFields();
     });
@@ -52,11 +52,6 @@
         method: string = 'GET',
         body?: any,
     ) {
-        console.log(document);
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const authCode = urlParams.get('code');
-        const API_TOKEN = await getAccessToken(authCode);
         const url = `${BASE_API_URL}/${endpoint}?api_token=${API_TOKEN}`;
         try {
             const response = await fetch(url, {
