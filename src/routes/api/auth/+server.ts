@@ -1,9 +1,10 @@
 // src/routes/api/auth.js
 export async function POST({ request }) {
     const { code, refresh_token } = await request.json();
-    const client_id = 'd5b97127d6cc9814';
-    const client_secret = '0441c6cff83aa5ca3ba64d0c7989f3d1e61ecf98';
-    const redirect_uri = 'https://workizpreview.onrender.com/form';
+
+    const client_id = import.meta.env.VITE_CLIENT_ID;
+    const client_secret = import.meta.env.VITE_CLIENT_SECRET;
+    const redirect_uri = import.meta.env.VITE_REDIRCT_URL;
 
     let params;
 

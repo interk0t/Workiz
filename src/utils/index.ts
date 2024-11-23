@@ -17,14 +17,14 @@ export async function checkCustomFields() {
     }
 }
 
-const BASE_API_URL = 'https://api.pipedrive.com/v1';
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export async function apiRequest(
     endpoint: string,
     method: string = 'GET',
     body?: any,
 ) {
-    const url = `${BASE_API_URL}/${endpoint}`;
+    const url = `${BASE_URL}/${endpoint}`;
     const API_TOKEN = await getValidToken();
     try {
         const response = await fetch(url, {
