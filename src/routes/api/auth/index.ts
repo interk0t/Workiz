@@ -1,7 +1,9 @@
+import moment from 'moment';
+
 export function setCookie(name: string, value: string, days: number) {
     const expires = new Date(Date.now() + days * 864e5).toUTCString();
     const isProduction = import.meta.env.VITE_MODE === 'production';
-    document.cookie = `${name}=${value}; expires=${expires}; path=/; secure${isProduction ? '; HttpOnly' : ''}`;
+    document.cookie = `${name}=${value}; expires=${expires}; path=/; secure;}`;
 }
 
 export function getCookie(name: string) {
@@ -26,7 +28,10 @@ export function getTokensFromCookies() {
 export async function getValidToken() {
     const { accessToken, tokenExpiry } = getTokensFromCookies();
     const currentTime = Date.now();
-
+    console.log({
+        currentTime: moment(currentTime).format('HH:mm:ss'),
+        tokenExpiry: moment(Number(tokenExpiry)).format('HH:mm:ss'),
+    });
     if (accessToken && tokenExpiry && currentTime < Number(tokenExpiry)) {
         console.log('Токен актуален');
         return accessToken;
@@ -49,6 +54,9 @@ export async function handleTokenExchange(code: string) {
         const data = await response.json();
         if (data.access_token) {
             const expiryTime = Date.now() + 5 * 1000;
+            console.log('handleTokenExchange: ', {
+                expiryTime: moment(expiryTime).format('HH:mm:ss'),
+            });
             setCookie('access_token', data.access_token, 7);
             setCookie('refresh_token', data.refresh_token, 7);
             setCookie('token_expiry', expiryTime.toString(), 7);
