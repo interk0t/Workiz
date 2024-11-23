@@ -23,11 +23,29 @@ export const forms: TForms = {
         [{ title: 'Zip code' }, { title: 'Area' }],
     ],
     Sheduled: [
-        [{ title: 'Star date' }],
+        [{ title: 'Start date' }],
         [{ title: 'Start time' }, { title: 'End time' }],
         [{ title: 'Test select' }],
     ],
 };
+
+export const formStore = $state<{ [key: string]: string }>({});
+
+function getFields() {
+    let fields = [];
+
+    for (const key in forms) {
+        for (const row of forms[key]) {
+            for (const el of row) {
+                fields.push(el.title);
+            }
+        }
+    }
+
+    return fields;
+}
+
+export const customFields = $state<string[]>(getFields());
 
 type TForms = {
     [key: string]: { title: string; options?: string[] }[][];

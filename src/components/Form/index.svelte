@@ -1,10 +1,11 @@
 <script lang="ts">
+    import { enhance } from '$app/forms';
     import './styles.sass';
 
     let { children, title } = $props();
 </script>
 
-<div class="Form">
+<form class="Form">
     <span>{title}</span>
     {@render children()}
-</div>
+</form>

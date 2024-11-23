@@ -1,20 +1,31 @@
 <script lang="ts">
+    import { formStore } from '../../store/index.svelte.js';
     import './styles.sass';
-    let { data }: { title: string; options?: string[] } = $props();
-    let selectedValue = $state('');
+
+    interface InputProps {
+        data: { title: string; options?: string[] };
+    }
+
+    let { data }: InputProps = $props();
+
     let isOptions = $state(false);
 
-    const handleSelectChange = (event: Event) => {
-        const selectedOption = (event.target as HTMLSelectElement).value;
-        selectedValue = selectedOption; // Вставляем выбранное в инпут
-    };
+    function setType() {
+        if (data.title === 'Start time' || data.title === 'End time') {
+            return 'time';
+        } else if (data.title === 'Start date') {
+            return 'date';
+        } else {
+            return 'text';
+        }
+    }
 </script>
 
 <div class="Input" id="54">
     <input
-        type="time"
+        type={setType()}
         placeholder={data.title}
-        bind:value={selectedValue}
+        bind:value={formStore[data.title]}
         id={data.title.replace(' ', '')}
         onfocus={() => (isOptions = false)}
     />
@@ -35,7 +46,8 @@
                         role="button"
                         class="option"
                         onclick={() => (
-                            (selectedValue = option), (isOptions = !isOptions)
+                            (formStore[data.title] = option),
+                            (isOptions = !isOptions)
                         )}
                     >
                         {option}
