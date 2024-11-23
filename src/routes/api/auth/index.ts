@@ -1,6 +1,6 @@
 export function setCookie(name: string, value: string, days: number) {
     const expires = new Date(Date.now() + days * 864e5).toUTCString();
-    document.cookie = `${name}=${value}; expires=${expires}; path=/; secure; HttpOnly`;
+    document.cookie = `${name}=${value}; expires=${expires}; path=/; secure`;
 }
 
 export function getCookie(name: string) {
@@ -9,6 +9,7 @@ export function getCookie(name: string) {
     );
     return match ? match[2] : null;
 }
+
 export function getTokensFromCookies() {
     const accessToken = getCookie('access_token');
     const refreshToken = getCookie('refresh_token');
@@ -34,6 +35,7 @@ export async function getValidToken() {
     await handleTokenRefresh();
     return getCookie('access_token');
 }
+
 export async function handleTokenExchange(code: string) {
     try {
         const response = await fetch('/api/auth/', {
