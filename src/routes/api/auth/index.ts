@@ -3,7 +3,7 @@ import moment from 'moment';
 export function setCookie(name: string, value: string, days: number) {
     const expires = new Date(Date.now() + days * 864e5).toUTCString();
     const isProduction = import.meta.env.VITE_MODE === 'production';
-    document.cookie = `${name}=${value}; expires=${expires}; path=/; secure; HttpOnly;}`;
+    document.cookie = `${name}=${value}; expires=${expires}; path=/; secure; HttpOnly`;
 }
 
 export function getCookie(name: string) {
