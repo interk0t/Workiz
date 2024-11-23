@@ -3,7 +3,7 @@ export async function POST({ request }) {
     const { code, refresh_token } = await request.json();
     const client_id = 'd5b97127d6cc9814';
     const client_secret = '0441c6cff83aa5ca3ba64d0c7989f3d1e61ecf98';
-    const redirect_uri = 'http://localhost:5173/form';
+    const redirect_uri = 'https://workizpreview.onrender.com/form';
 
     let params;
 
