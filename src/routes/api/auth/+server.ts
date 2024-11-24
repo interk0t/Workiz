@@ -8,7 +8,7 @@ export async function POST({ request, cookies }) {
     const access_token = cookies.get('access_token');
     const refresh_token = cookies.get('refresh_token')!;
     const token_expiry = cookies.get('token_expiry')!;
-
+    const secure = false;
     const body = await request.json();
 
     console.log('body', body);
@@ -26,13 +26,13 @@ export async function POST({ request, cookies }) {
             const data = await _fetch(params);
             console.log(data);
 
-            setCookie(cookies, 'access_token', data.access_token, true);
-            setCookie(cookies, 'refresh_token', data.refresh_token, true);
+            setCookie(cookies, 'access_token', data.access_token, secure);
+            setCookie(cookies, 'refresh_token', data.refresh_token, secure);
             setCookie(
                 cookies,
                 'token_expiry',
                 (Date.now() + 5 * 1000).toString(),
-                true,
+                secure,
             );
 
             return json(data);
@@ -58,14 +58,14 @@ export async function POST({ request, cookies }) {
                     client_secret,
                 });
                 const data = await _fetch(params);
-                setCookie(cookies, 'refresh_token', data.refresh_token, true);
+                setCookie(cookies, 'refresh_token', data.refresh_token, secure);
                 setCookie(
                     cookies,
                     'token_expiry',
                     (Date.now() + 5 * 1000).toString(),
-                    true,
+                    secure,
                 );
-                return json({ ...data, tokenRefresh: true });
+                return json({ ...data, tokenRefresh: secure });
             }
         } else if (body.action === 'is_access_token_exist') {
             if (access_token) {
