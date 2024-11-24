@@ -7,13 +7,12 @@
         apiRequest,
         getDealFields,
         setDealFields,
+        getCustomFields,
     } from '../api/utils/index.js';
     import {
-        getCookie,
         getValidToken,
         handleTokenExchange,
         isAccessTokenExist,
-        setCookie,
     } from '../api/auth/index.js';
     import './styles.sass';
     import { onMount } from 'svelte';
@@ -27,7 +26,6 @@
         const API_TOKEN = await isAccessTokenExist();
 
         if (authCode && !API_TOKEN) {
-            setCookie('authCode', authCode, 7);
             handleTokenExchange(authCode).then(() => {
                 console.log('dasdad');
                 checkCustomFields();
@@ -88,9 +86,9 @@
             >{isPending ? '...Pending' : 'Create job'}</button
         >
         <button
-            onclick={async () => await getValidToken()}
+            onclick={async () => await getCustomFields()}
             style="background-color: {isPending ? 'yellow' : 'lightgrey'};"
-            >get valid token</button
+            >get fields</button
         >
     </div>
 </div>

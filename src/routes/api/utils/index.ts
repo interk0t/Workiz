@@ -25,13 +25,12 @@ export async function apiRequest(
     method: string = 'GET',
     body?: any,
 ) {
-    const url = `${BASE_URL}/${endpoint}`;
-    const API_TOKEN = await getValidToken();
+    const url =
+        method === 'GET' ? '/api/auth/?action=get_custom_fields' : `/api/auth/`;
     try {
         const response = await fetch(url, {
             method,
             headers: {
-                Authorization: `Bearer ${API_TOKEN}`,
                 'Content-Type': 'application/json',
             },
             body: body ? JSON.stringify(body) : undefined,
@@ -49,7 +48,26 @@ export async function apiRequest(
 }
 
 export async function getCustomFields() {
-    return await apiRequest('dealFields');
+    try {
+        const response = await fetch('/api/auth/?action=get_custom_fields', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await response.json();
+        console.log(data);
+
+        if (data.success) {
+            console.log('Custom fields fetched successfully');
+            return data.data;
+        } else {
+            throw new Error('Failed to get custom fields');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
 export async function addCustomFields(missingFields: string[]) {

@@ -1,30 +1,3 @@
-import moment from 'moment';
-
-export function setCookie(name: string, value: string, days: number) {
-    // const expires = new Date(Date.now() + days * 864e5).toUTCString();
-    // const isProduction = import.meta.env.VITE_MODE === 'production';
-    // document.cookie = `${name}=${value}; expires=${expires}; path=/; secure; HttpOnly`;
-}
-
-export function getCookie(name: string) {
-    // const match = document.cookie.match(
-    //     new RegExp('(^| )' + name + '=([^;]+)'),
-    // );
-    // return match ? match[2] : null;
-}
-
-// export function getTokensFromCookies() {
-//     const accessToken = getCookie('access_token');
-//     const refreshToken = getCookie('refresh_token');
-//     const tokenExpiry = getCookie('token_expiry');
-
-//     return {
-//         accessToken,
-//         refreshToken,
-//         tokenExpiry,
-//     };
-// }
-
 export async function getValidToken() {
     try {
         // Пробуем получить актуальный токен

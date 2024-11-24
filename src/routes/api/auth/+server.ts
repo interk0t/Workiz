@@ -31,7 +31,7 @@ export async function POST({ request, cookies }) {
             setCookie(
                 cookies,
                 'token_expiry',
-                (Date.now() + 5 * 1000).toString(),
+                (Date.now() + 5000 * 1000).toString(),
                 secure,
             );
 
@@ -62,7 +62,7 @@ export async function POST({ request, cookies }) {
                 setCookie(
                     cookies,
                     'token_expiry',
-                    (Date.now() + 5 * 1000).toString(),
+                    (Date.now() + 5000 * 1000).toString(),
                     secure,
                 );
                 return json({ ...data, tokenRefresh: secure });
@@ -77,6 +77,32 @@ export async function POST({ request, cookies }) {
     } catch (error) {
         return json({ error: 'Failed to fetch tokens' }, { status: 500 });
     }
+}
+
+export async function GET({ url, cookies }) {
+    const action = url.searchParams.get('action'); // Извлекаем параметр из строки запроса
+    const access_token = cookies.get('access_token');
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    console.log('access_token', access_token, 'Base URL', BASE_URL);
+
+    if (action === 'get_custom_fields') {
+        if (access_token) {
+            const url = `${BASE_URL}/dealFields`;
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+            return json(data);
+        } else {
+            return json({ access_token: false });
+        }
+    }
+
+    return json({ error: 'Invalid action' }, { status: 400 });
 }
 
 async function _fetch(params: any) {
