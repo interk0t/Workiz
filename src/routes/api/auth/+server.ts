@@ -11,7 +11,7 @@ export async function POST({ request, cookies }) {
     const secure = false;
     const body = await request.json();
 
-    console.log('body', body);
+    //console.log('body', body);
     try {
         if (body.action === 'token_exchange') {
             let code = body.code;
@@ -31,7 +31,7 @@ export async function POST({ request, cookies }) {
             setCookie(
                 cookies,
                 'token_expiry',
-                (Date.now() + 5000 * 1000).toString(),
+                (Date.now() + 5 * 1000).toString(),
                 secure,
             );
 
@@ -62,7 +62,7 @@ export async function POST({ request, cookies }) {
                 setCookie(
                     cookies,
                     'token_expiry',
-                    (Date.now() + 5000 * 1000).toString(),
+                    (Date.now() + 5 * 1000).toString(),
                     secure,
                 );
                 return json({ ...data, tokenRefresh: secure });
@@ -73,15 +73,15 @@ export async function POST({ request, cookies }) {
             } else {
                 return json({ access_token: false });
             }
-        } else if (body.action === 'add_custom_fields') {
-            const data = await _fetchDeals(
-                body.endpoint,
-                body.data,
-                access_token,
-            );
-            return json(data);
-        } else if (body.action === 'create_deal') {
-            console.log('body', body);
+        } else if (
+            body.action === 'add_custom_fields' ||
+            body.action === 'create_deal'
+        ) {
+            if (!access_token)
+                return json(
+                    { error: 'Token not available yet try again' },
+                    { status: 400 },
+                );
             const data = await _fetchDeals(
                 body.endpoint,
                 body.data,

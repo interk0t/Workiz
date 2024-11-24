@@ -21,6 +21,7 @@ export async function checkCustomFields() {
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export async function apiRequest(method: string = 'GET', body?: any) {
+    await getValidToken();
     const url =
         method === 'GET' ? '/api/auth/?action=get_custom_fields' : `/api/auth/`;
     try {

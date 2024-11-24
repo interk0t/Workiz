@@ -7,10 +7,8 @@
         apiRequest,
         getDealFields,
         setDealFields,
-        getCustomFields,
     } from '../api/utils/index.js';
     import {
-        getValidToken,
         handleTokenExchange,
         isAccessTokenExist,
     } from '../api/auth/index.js';
@@ -88,11 +86,6 @@
             onclick={createDeal}
             style="background-color: {isPending ? 'yellow' : 'lightgrey'};"
             >{isPending ? '...Pending' : 'Create job'}</button
-        >
-        <button
-            onclick={async () => await getCustomFields()}
-            style="background-color: {isPending ? 'yellow' : 'lightgrey'};"
-            >get fields</button
         >
     </div>
 </div>
