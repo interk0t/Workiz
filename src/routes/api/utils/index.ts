@@ -18,8 +18,6 @@ export async function checkCustomFields() {
     }
 }
 
-const BASE_URL = import.meta.env.VITE_BASE_URL;
-
 export async function apiRequest(method: string = 'GET', body?: any) {
     await getValidToken();
     const url =
@@ -47,26 +45,6 @@ export async function apiRequest(method: string = 'GET', body?: any) {
 
 export async function getCustomFields() {
     return await apiRequest();
-    // try {
-    //     const response = await fetch('/api/auth/?action=get_custom_fields', {
-    //         method: 'GET',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //     });
-
-    //     const data = await response.json();
-    //     console.log(data);
-
-    //     if (data.success) {
-    //         console.log('Custom fields fetched successfully');
-    //         return data.data;
-    //     } else {
-    //         throw new Error('Failed to get custom fields');
-    //     }
-    // } catch (error) {
-    //     console.error('Error:', error);
-    // }
 }
 
 export async function addCustomFields(missingFields: string[]) {
@@ -76,30 +54,6 @@ export async function addCustomFields(missingFields: string[]) {
             endpoint: 'dealFields',
             data: { name: field, field_type: 'text' },
         });
-        // try {
-        //     const response = await fetch('/api/auth/', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify({
-        //             action: 'add_custom_fields',
-        //             endpoint: 'dealFields',
-        //             data: { name: field, field_type: 'text' },
-        //         }),
-        //     });
-
-        //     const data = await response.json();
-        //     console.log(data);
-
-        //     if (data.access_token) {
-        //         console.log('Token exchange success');
-        //     } else {
-        //         throw new Error('Failed to get access token');
-        //     }
-        // } catch (error) {
-        //     console.error('Error:', error);
-        // }
         console.log(`Кастомное поле "${field}" создано`);
     }
 }

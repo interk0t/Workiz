@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { json, type Cookies } from '@sveltejs/kit';
 
 export async function POST({ request, cookies }) {
@@ -11,7 +10,6 @@ export async function POST({ request, cookies }) {
     const secure = false;
     const body = await request.json();
 
-    //console.log('body', body);
     try {
         if (body.action === 'token_exchange') {
             let code = body.code;
@@ -22,9 +20,8 @@ export async function POST({ request, cookies }) {
                 client_secret,
                 redirect_uri,
             });
-            console.log(params);
+
             const data = await _fetchTokens(params);
-            console.log(data);
 
             setCookie(cookies, 'access_token', data.access_token, secure);
             setCookie(cookies, 'refresh_token', data.refresh_token, secure);
@@ -38,10 +35,7 @@ export async function POST({ request, cookies }) {
             return json(data);
         } else if (body.action === 'get_valid_token') {
             const currentTime = Date.now();
-            console.log({
-                currentTime: moment(currentTime).format('HH:mm:ss'),
-                tokenExpiry: moment(Number(token_expiry)).format('HH:mm:ss'),
-            });
+
             if (
                 access_token &&
                 token_expiry &&
@@ -95,7 +89,7 @@ export async function POST({ request, cookies }) {
 }
 
 export async function GET({ url, cookies }) {
-    const action = url.searchParams.get('action'); // Извлекаем параметр из строки запроса
+    const action = url.searchParams.get('action');
     const access_token = cookies.get('access_token');
     const BASE_URL = import.meta.env.VITE_BASE_URL;
     console.log('Base URL', BASE_URL);

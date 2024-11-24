@@ -1,7 +1,5 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
     import './styles.sass';
-
     let { children, title } = $props();
 </script>
 

@@ -1,6 +1,5 @@
 export async function getValidToken() {
     try {
-        // Пробуем получить актуальный токен
         const response = await fetch('/api/auth/', {
             method: 'POST',
             headers: {
@@ -11,7 +10,6 @@ export async function getValidToken() {
 
         const data = await response.json();
 
-        // Если токен обновлен
         if (data.access_token) {
             if (data.tokenRefresh) {
                 console.log('Token has been refreshed', data);
@@ -21,7 +19,6 @@ export async function getValidToken() {
 
             return data.access_token;
         }
-        console.log(data);
         throw new Error('Failed to get valid token');
     } catch (error) {
         console.error('Error fetching valid token:', error);
@@ -41,7 +38,6 @@ export async function handleTokenExchange(code: string) {
         });
 
         const data = await response.json();
-        console.log(data);
 
         if (data.access_token) {
             console.log('Token exchange success');

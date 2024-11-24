@@ -1,7 +1,3 @@
-<script lang="ts">
-    import { onMount } from 'svelte';
-</script>
-
 <h1>CRM Integration</h1>
 
 <iframe title="form" src="/form" width="1000" height="600" id="iframe"></iframe>
