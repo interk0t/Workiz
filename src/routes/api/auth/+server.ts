@@ -23,7 +23,7 @@ export async function POST({ request, cookies }) {
                 redirect_uri,
             });
             console.log(params);
-            const data = await _fetch(params);
+            const data = await _fetchTokens(params);
             console.log(data);
 
             setCookie(cookies, 'access_token', data.access_token, secure);
@@ -57,7 +57,7 @@ export async function POST({ request, cookies }) {
                     client_id,
                     client_secret,
                 });
-                const data = await _fetch(params);
+                const data = await _fetchTokens(params);
                 setCookie(cookies, 'refresh_token', data.refresh_token, secure);
                 setCookie(
                     cookies,
@@ -73,6 +73,21 @@ export async function POST({ request, cookies }) {
             } else {
                 return json({ access_token: false });
             }
+        } else if (body.action === 'add_custom_fields') {
+            const data = await _fetchDeals(
+                body.endpoint,
+                body.data,
+                access_token,
+            );
+            return json(data);
+        } else if (body.action === 'create_deal') {
+            console.log('body', body);
+            const data = await _fetchDeals(
+                body.endpoint,
+                body.data,
+                access_token,
+            );
+            return json(data);
         }
     } catch (error) {
         return json({ error: 'Failed to fetch tokens' }, { status: 500 });
@@ -83,7 +98,7 @@ export async function GET({ url, cookies }) {
     const action = url.searchParams.get('action'); // Извлекаем параметр из строки запроса
     const access_token = cookies.get('access_token');
     const BASE_URL = import.meta.env.VITE_BASE_URL;
-    console.log('access_token', access_token, 'Base URL', BASE_URL);
+    console.log('Base URL', BASE_URL);
 
     if (action === 'get_custom_fields') {
         if (access_token) {
@@ -95,7 +110,9 @@ export async function GET({ url, cookies }) {
                     'Content-Type': 'application/json',
                 },
             });
+
             const data = await response.json();
+
             return json(data);
         } else {
             return json({ access_token: false });
@@ -105,13 +122,55 @@ export async function GET({ url, cookies }) {
     return json({ error: 'Invalid action' }, { status: 400 });
 }
 
-async function _fetch(params: any) {
+export async function PUT({ request, cookies }) {
+    const body = await request.json();
+    const access_token = cookies.get('access_token');
+    console.log('PUT Body', body);
+
+    if (body.action === 'set_deal_fields') {
+        const response = await fetch(
+            `https://api.pipedrive.com/v1/${body.endpoint}`,
+            {
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: body.data ? JSON.stringify(body.data) : undefined,
+            },
+        );
+        const data = await response.json();
+        return json(data);
+    }
+
+    return json({ error: 'Invalid action' }, { status: 400 });
+}
+
+async function _fetchTokens(params: any) {
     const response = await fetch('https://oauth.pipedrive.com/oauth/token', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: params?.toString(),
+    });
+
+    return await response.json();
+}
+
+async function _fetchDeals(
+    endpoint: string,
+    body?: any,
+    access_token?: string,
+    method: string = 'POST',
+) {
+    const response = await fetch(`https://api.pipedrive.com/v1/${endpoint}`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${access_token}`,
+            'Content-Type': 'application/json',
+        },
+        body: body ? JSON.stringify(body) : undefined,
     });
 
     return await response.json();

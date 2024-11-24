@@ -39,7 +39,11 @@
         isPending = true;
 
         try {
-            const newDeal = await apiRequest('deals', 'POST', data);
+            const newDeal = await apiRequest('POST', {
+                action: 'create_deal',
+                endpoint: 'deals',
+                data,
+            });
             const dealFields = await getDealFields();
 
             const updatePromises = dealFields.map(

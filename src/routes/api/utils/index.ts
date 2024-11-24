@@ -20,11 +20,7 @@ export async function checkCustomFields() {
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-export async function apiRequest(
-    endpoint: string,
-    method: string = 'GET',
-    body?: any,
-) {
+export async function apiRequest(method: string = 'GET', body?: any) {
     const url =
         method === 'GET' ? '/api/auth/?action=get_custom_fields' : `/api/auth/`;
     try {
@@ -37,9 +33,10 @@ export async function apiRequest(
         });
         const result = await response.json();
         if (!result.success) {
-            console.error(`Ошибка: ${result.error}`);
-            throw new Error(result.error);
+            console.error(`Ошибка: ${JSON.stringify(result)}`);
+            throw new Error(JSON.stringify(result));
         }
+
         return result.data;
     } catch (error) {
         console.error(`Ошибка запроса ${method} ${url}:`, error);
@@ -48,34 +45,60 @@ export async function apiRequest(
 }
 
 export async function getCustomFields() {
-    try {
-        const response = await fetch('/api/auth/?action=get_custom_fields', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+    return await apiRequest();
+    // try {
+    //     const response = await fetch('/api/auth/?action=get_custom_fields', {
+    //         method: 'GET',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //     });
 
-        const data = await response.json();
-        console.log(data);
+    //     const data = await response.json();
+    //     console.log(data);
 
-        if (data.success) {
-            console.log('Custom fields fetched successfully');
-            return data.data;
-        } else {
-            throw new Error('Failed to get custom fields');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
+    //     if (data.success) {
+    //         console.log('Custom fields fetched successfully');
+    //         return data.data;
+    //     } else {
+    //         throw new Error('Failed to get custom fields');
+    //     }
+    // } catch (error) {
+    //     console.error('Error:', error);
+    // }
 }
 
 export async function addCustomFields(missingFields: string[]) {
     for (const field of missingFields) {
-        await apiRequest('dealFields', 'POST', {
-            name: field,
-            field_type: 'text',
+        await apiRequest('POST', {
+            action: 'add_custom_fields',
+            endpoint: 'dealFields',
+            data: { name: field, field_type: 'text' },
         });
+        // try {
+        //     const response = await fetch('/api/auth/', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({
+        //             action: 'add_custom_fields',
+        //             endpoint: 'dealFields',
+        //             data: { name: field, field_type: 'text' },
+        //         }),
+        //     });
+
+        //     const data = await response.json();
+        //     console.log(data);
+
+        //     if (data.access_token) {
+        //         console.log('Token exchange success');
+        //     } else {
+        //         throw new Error('Failed to get access token');
+        //     }
+        // } catch (error) {
+        //     console.error('Error:', error);
+        // }
         console.log(`Кастомное поле "${field}" создано`);
     }
 }
@@ -85,8 +108,11 @@ export async function setDealFields(
     key: string,
     value: string,
 ) {
-    const data = { [key]: value };
-    await apiRequest(`deals/${dealId}`, 'PUT', data);
+    await apiRequest('PUT', {
+        endpoint: `deals/${dealId}`,
+        action: 'set_deal_fields',
+        data: { [key]: value },
+    });
     console.log(`Поле ${key} обновлено значением: ${value}`);
 }
 
