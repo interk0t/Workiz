@@ -1,55 +1,105 @@
-// src/routes/api/auth.js
-export async function POST({ request }) {
-    const { code, refresh_token } = await request.json();
+import moment from 'moment';
+import { json, type Cookies } from '@sveltejs/kit';
 
+export async function POST({ request, cookies }) {
     const client_id = import.meta.env.VITE_CLIENT_ID;
     const client_secret = import.meta.env.VITE_CLIENT_SECRET;
-    const redirect_uri = import.meta.env.VITE_REDIRCT_URL;
+    const redirect_uri = import.meta.env.VITE_REDIRECT_URL;
+    const access_token = cookies.get('access_token');
+    const refresh_token = cookies.get('refresh_token')!;
+    const token_expiry = cookies.get('token_expiry')!;
 
-    let params;
+    const body = await request.json();
 
-    if (code) {
-        params = new URLSearchParams({
-            grant_type: 'authorization_code',
-            code,
-            client_id,
-            client_secret,
-            redirect_uri,
-        });
-    } else if (refresh_token) {
-        params = new URLSearchParams({
-            grant_type: 'refresh_token',
-            refresh_token,
-            client_id,
-            client_secret,
-        });
-    } else {
-        return new Response(
-            JSON.stringify({ error: 'Missing code or refresh_token' }),
-            { status: 400 },
-        );
-    }
-
+    console.log('body', body);
     try {
-        const response = await fetch(
-            'https://oauth.pipedrive.com/oauth/token',
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: params.toString(),
-            },
-        );
+        if (body.action === 'token_exchange') {
+            let code = body.code;
+            const params = new URLSearchParams({
+                grant_type: 'authorization_code',
+                code,
+                client_id,
+                client_secret,
+                redirect_uri,
+            });
+            console.log(params);
+            const data = await _fetch(params);
+            console.log(data);
 
-        const data = await response.json();
-        return new Response(JSON.stringify(data), {
-            headers: { 'Content-Type': 'application/json' },
-        });
+            setCookie(cookies, 'access_token', data.access_token, true);
+            setCookie(cookies, 'refresh_token', data.refresh_token, true);
+            setCookie(
+                cookies,
+                'token_expiry',
+                (Date.now() + 5 * 1000).toString(),
+                true,
+            );
+
+            return json(data);
+        } else if (body.action === 'get_valid_token') {
+            const currentTime = Date.now();
+            console.log({
+                currentTime: moment(currentTime).format('HH:mm:ss'),
+                tokenExpiry: moment(Number(token_expiry)).format('HH:mm:ss'),
+            });
+            if (
+                access_token &&
+                token_expiry &&
+                currentTime < Number(token_expiry)
+            ) {
+                console.log('Токен актуален');
+                return json({ access_token });
+            } else {
+                console.log('Токен не актуален');
+                const params = new URLSearchParams({
+                    grant_type: 'refresh_token',
+                    refresh_token,
+                    client_id,
+                    client_secret,
+                });
+                const data = await _fetch(params);
+                setCookie(cookies, 'refresh_token', data.refresh_token, true);
+                setCookie(
+                    cookies,
+                    'token_expiry',
+                    (Date.now() + 5 * 1000).toString(),
+                    true,
+                );
+                return json({ ...data, tokenRefresh: true });
+            }
+        } else if (body.action === 'is_access_token_exist') {
+            if (access_token) {
+                return json({ access_token });
+            } else {
+                return json({ access_token: false });
+            }
+        }
     } catch (error) {
-        return new Response(
-            JSON.stringify({ error: 'Failed to refresh token' }),
-            { status: 500 },
-        );
+        return json({ error: 'Failed to fetch tokens' }, { status: 500 });
     }
+}
+
+async function _fetch(params: any) {
+    const response = await fetch('https://oauth.pipedrive.com/oauth/token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params?.toString(),
+    });
+
+    return await response.json();
+}
+function setCookie(
+    cookies: Cookies,
+    key: string,
+    data: string,
+    secure: boolean,
+) {
+    cookies.set(key, data, {
+        httpOnly: secure,
+        secure: secure,
+        path: '/',
+        maxAge: 5 * 86400,
+    });
 }

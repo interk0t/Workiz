@@ -3,6 +3,7 @@ import { customFields } from '../../../store/index.svelte.js';
 
 export async function checkCustomFields() {
     const _customFields = await getCustomFields();
+
     const existingFields = _customFields.map(
         (field: { name: string }) => field.name,
     );

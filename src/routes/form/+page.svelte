@@ -10,22 +10,26 @@
     } from '../api/utils/index.js';
     import {
         getCookie,
+        getValidToken,
         handleTokenExchange,
+        isAccessTokenExist,
         setCookie,
     } from '../api/auth/index.js';
     import './styles.sass';
+    import { onMount } from 'svelte';
 
     let isPending = $state(false);
     let authCode: string | null = null;
 
-    $effect(() => {
+    onMount(async () => {
         const params = new URLSearchParams(window.location.search);
         authCode = params.get('code');
-        const API_TOKEN: string = getCookie('access_token')!;
+        const API_TOKEN = await isAccessTokenExist();
 
         if (authCode && !API_TOKEN) {
             setCookie('authCode', authCode, 7);
             handleTokenExchange(authCode).then(() => {
+                console.log('dasdad');
                 checkCustomFields();
             });
         }
@@ -82,6 +86,11 @@
             onclick={createDeal}
             style="background-color: {isPending ? 'yellow' : 'lightgrey'};"
             >{isPending ? '...Pending' : 'Create job'}</button
+        >
+        <button
+            onclick={async () => await getValidToken()}
+            style="background-color: {isPending ? 'yellow' : 'lightgrey'};"
+            >get valid token</button
         >
     </div>
 </div>
